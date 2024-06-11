@@ -74,3 +74,16 @@ function removeFromCart(index) {
     cartItems.splice(index, 1);
     updateCart();
 }
+
+// Function to handle checkout
+function handleCheckout() {
+    const checkoutLink = document.querySelector('.bg-blue-600');
+    checkoutLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        localStorage.setItem('cartTotal', cartTotal.toFixed(2));
+        window.location.href = 'checkout.html';
+    });
+}
+
+handleCheckout();
