@@ -87,3 +87,11 @@ function handleCheckout() {
 }
 
 handleCheckout();
+
+
+document.querySelector('a[href="#gadgets"]').addEventListener('click', function(event) {
+    event.preventDefault();
+    document.querySelector('#gadgets').scrollIntoView({
+        behavior: 'smooth'
+    });
+});

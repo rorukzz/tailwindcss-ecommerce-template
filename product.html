@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Tech-Gadgets Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style href="styles.css"></style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Tech-Gadgets Shop</h1>
+        <nav class="space-x-4 flex items-center">
+            <a href="index.html" class="hover:underline">Home</a>
+            <a href="shop.html" class="hover:underline">Shop</a>
+            <!-- Cart icon and dropdown -->
+            <div class="relative">
+                <button id="cart-button" class="relative flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 21h6a2 2 0 002-2v-1a2 2 0 00-2-2H9a2 2 0 00-2 2v1a2 2 0 002 2zM17 7H7.26a1.75 1.75 0 00-1.75 1.75v.5a1.75 1.75 0 001.75 1.75H17M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span id="cart-count" class="ml-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </button>
+                <div id="cart-dropdown" class="absolute right-0 mt-2 rounded-lg shadow-lg hidden">
+                    <ul id="cart-items">
+                        <!-- Cart items will be dynamically added here -->
+                    </ul>
+                    <div id="empty-cart-message" class="hidden">No items in cart</div>
+                    <div id="cart-total" class="font-bold p-2 text-center">
+                        Total: $<span id="cart-total-value">0.00</span>
+                    </div>
+                    <div class="p-2 text-center">
+                        <a href="checkout.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-10">
+        <section class="bg-white p-6 rounded-lg shadow-lg" id="product-details">
+            <h2 class="text-2xl md:text-3xl font-bold mb-4 text-blue-700" id="product-name"></h2>
+            <img id="product-image" src="" alt="Product Image" class="mb-4 w-full h-64 object-cover rounded-lg">
+            <p class="text-gray-700 mb-4" id="product-description"></p>
+            <p class="text-blue-600 font-bold text-xl mb-4" id="product-price"></p>
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg" id="add-to-cart-button">Add to Cart</button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-10">
+        <div class="container mx-auto text-center">
+            <div class="mb-4">
+                <h3 class="text-lg font-bold">Contact Us</h3>
+                <p>Email: <a href="mailto:rory.tait.folster@gmail.com" class="text-blue-400 hover:underline">rory.tait.folster@gmail.com</a></p>
+                <p>Location: Melbourne, Victoria</p>
+            </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-bold">Disclaimer</h3>
+                <p class="text-sm">
+                    All product names, logos, and brands are property of their respective owners. All company, product, and service names used in this website are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.
+                </p>
+            </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-bold">Returns Policy</h3>
+                <p class="text-sm">
+                    We accept returns within 30 days of purchase. Items must be in original condition and packaging. Please contact us at <a href="mailto:rory.tait.folster@gmail.com" class="text-blue-400 hover:underline">rory.tait.folster@gmail.com</a> for return instructions.
+                </p>
+            </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-bold">Request Items</h3>
+                <p class="text-sm">
+                    Can't find what you're looking for? Let us know! Contact us at <a href="mailto:rory.tait.folster@gmail.com" class="text-blue-400 hover:underline">rory.tait.folster@gmail.com</a> to request items not listed in our catalog.
+                </p>
+            </div>
+            <div class="text-sm">
+                &copy; 2024 Tech-Gadgets Shop. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Function to fetch product data from JSON file
+        async function fetchProductData(productId) {
+            try {
+                const response = await fetch('products.json');
+                const products = await response.json();
+                return products.find(product => product.id === productId);
+            } catch (error) {
+                console.error('Error fetching product data:', error);
+                return null;
+            }
+        }
+
+        // Function to load product details
+        async function loadProductDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+            if (!productId) {
+                console.error('No product ID found in URL');
+                return;
+            }
+
+            const product = await fetchProductData(productId);
+            if (!product) {
+                console.error('Product not found');
+                return;
+            }
+
+            document.getElementById('product-name').textContent = product.name;
+            document.getElementById('product-image').src = product.image;
+            document.getElementById('product-description').textContent = product.description;
+            document.getElementById('product-price').textContent = `$${product.price.toFixed(2)}`;
+            document.getElementById('add-to-cart-button').onclick = () => addToCart(product.name, product.price);
+        }
+
+        // Add to cart function
+        function addToCart(productName, productPrice) {
+            // Implement add to cart functionality
+            alert(`${productName} has been added to your cart.`);
+        }
+
+        // Load product details when the page loads
+        window.onload = loadProductDetails;
+    </script>
+</body>
+</html>
